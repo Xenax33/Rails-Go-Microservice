@@ -1,0 +1,17 @@
+require 'bunny'
+
+
+RABBIT_CONNECTION = Bunny.new(
+  host: "localhost", # or "host.docker.internal" if needed
+  port: 5672,
+  user: "guest",
+  password: "guest"
+)
+
+
+begin
+  RABBITMQ.start
+  puts "✅ Connected to RabbitMQ"
+rescue Bunny::TCPConnectionFailed => e
+  puts "❌ RabbitMQ connection failed: #{e.message}"
+end
