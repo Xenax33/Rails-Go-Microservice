@@ -15,6 +15,9 @@ Rails.application.routes.draw do
     post '/buy', to: 'orders#buy'
   end
 
+  Rails.application.routes.draw do
+    post "/orders/buy", to: "orders#buy"
+  end
 
   # Defines the root path route ("/")
   # root "posts#index"

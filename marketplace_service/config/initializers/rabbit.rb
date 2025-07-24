@@ -10,7 +10,7 @@ RABBIT_CONNECTION = Bunny.new(
 
 
 begin
-  RABBITMQ.start
+  RABBIT_CONNECTION.start
   puts "✅ Connected to RabbitMQ"
 rescue Bunny::TCPConnectionFailed => e
   puts "❌ RabbitMQ connection failed: #{e.message}"
