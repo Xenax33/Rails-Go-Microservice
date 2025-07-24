@@ -21,7 +21,12 @@ namespace :tenant do
     puts "Checking if database #{db_name} exists..."
 
     begin
-      conn = PG.connect(dbname: 'postgres', user: 'postgres', password: 'password')
+      conn = PG.connect(
+        host: ENV.fetch('PG_HOST', 'db'),
+        dbname: 'postgres',
+        user: 'postgres',
+        password: 'password'
+      )
       result = conn.exec("SELECT 1 FROM pg_database WHERE datname='#{db_name}'")
 
       if result.ntuples == 0

@@ -2,10 +2,10 @@ require 'bunny'
 
 
 RABBIT_CONNECTION = Bunny.new(
-  host: "localhost",
-  port: 5672,
-  user: "guest",
-  password: "guest"
+  host: ENV.fetch("RABBITMQ_HOST", "rabbitmq"),
+  port: ENV.fetch("RABBITMQ_PORT", 5672).to_i,
+  username: ENV.fetch("RABBITMQ_USER", "guest"),
+  password: ENV.fetch("RABBITMQ_PASSWORD", "guest")
 )
 
 

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+      image: postgres:14
+      container_name: postgres_db
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: marketplace_service_development
+      ports:
+        - "5432:5432"
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    container_name: rabbitmq_dev
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"       # AMQP
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  marketplace_service:
+    build: ./marketplace_service
+    container_name: marketplace_service
+    ports:
+      - "3000:3000"
+    environment:
+      RABBITMQ_HOST: host.docker.internal
+      RABBITMQ_PORT: 5672
+    depends_on:
+      - go_microservice
+    volumes:
+      - ./marketplace_service:/app
+    command: bash -c "bundle install && rails server -b 0.0.0.0"
+
+  go_microservice:
+    build: ./go-microservice
+    container_name: go_microservice
+    ports:
+      - "8080:8080"
+    environment:
+      RABBITMQ_HOST: host.docker.internal
+      RABBITMQ_PORT: 5672
+    volumes:
+      - ./go-microservice:/app
+    command: go run main.go
+
+volumes:
+  pgdata:

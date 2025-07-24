@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-
+	"os"
 	"github.com/streadway/amqp"
 	_ "github.com/lib/pq"
 )
@@ -16,7 +16,18 @@ type PurchaseRequest struct {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	rabbitHost := os.Getenv("RABBITMQ_HOST")
+	if rabbitHost == "" {
+		rabbitHost = "rabbitmq"
+	}
+
+	rabbitPort := os.Getenv("RABBITMQ_PORT")
+	if rabbitPort == "" {
+		rabbitPort = "5672"
+	}
+
+	amqpURL := fmt.Sprintf("amqp://guest:guest@%s:%s/", rabbitHost, rabbitPort)
+	conn, err := amqp.Dial(amqpURL)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -60,7 +71,7 @@ func main() {
 			log.Printf("Processing purchase: Tenant=%s, ProductID=%d\n", request.Tenant, request.ProductId)
 
 			dbname := request.Tenant
-			connStr := fmt.Sprintf("host=localhost port=5432 user=postgres password=password dbname=%s sslmode=disable", dbname)
+			connStr := fmt.Sprintf("host=db port=5432 user=postgres password=password dbname=%s sslmode=disable", dbname)
 			db, err := sql.Open("postgres", connStr)
 			if err != nil {
 				log.Printf("Failed to connect to DB %s: %s", dbname, err)

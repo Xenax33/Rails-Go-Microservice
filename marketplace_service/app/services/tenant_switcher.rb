@@ -9,9 +9,8 @@ class TenantSwitcher
         database: tenant.db_name,
         username: 'postgres',
         password: 'password',
-        host:     'localhost'
+        host:     'db'
       }
-
       ActiveRecord::Base.establish_connection(config)
     end
   end

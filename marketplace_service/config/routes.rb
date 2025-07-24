@@ -12,7 +12,6 @@ Rails.application.routes.draw do
   # config/routes.rb
   Rails.application.routes.draw do
     resources :products, only: [:index, :create]
-    post '/buy', to: 'orders#buy'
   end
 
   Rails.application.routes.draw do
