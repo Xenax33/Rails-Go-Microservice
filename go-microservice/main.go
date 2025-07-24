@@ -37,10 +37,10 @@ func main() {
 	msgs, err := ch.Consume(
 		q.Name,
 		"",
-		true,  // auto-ack
-		false, // exclusive
-		false, // no-local
-		false, // no-wait
+		true,
+		false,
+		false,
+		false,
 		nil,
 	)
 	failOnError(err, "Failed to register consumer")
@@ -59,7 +59,6 @@ func main() {
 
 			log.Printf("Processing purchase: Tenant=%s, ProductID=%d\n", request.Tenant, request.ProductId)
 
-			// Connect to tenant DB
 			dbname := request.Tenant
 			connStr := fmt.Sprintf("host=localhost port=5432 user=postgres password=password dbname=%s sslmode=disable", dbname)
 			db, err := sql.Open("postgres", connStr)
@@ -69,7 +68,6 @@ func main() {
 			}
 			defer db.Close()
 
-			// Update sold_qty
 			res, err := db.Exec(`UPDATE products SET sold_qty = sold_qty + 1 WHERE id = $1`, request.ProductId)
 			if err != nil {
 				log.Printf("DB update error: %s", err)
@@ -82,14 +80,13 @@ func main() {
 				log.Printf("Product %d sold_qty incremented for tenant %s", request.ProductId, dbname)
 			}
 
-			// Send response back if reply_to is set
 			if d.ReplyTo != "" {
 				response := "payment processed"
 				err = ch.Publish(
-					"",        // exchange
-					d.ReplyTo, // routing key
-					false,     // mandatory
-					false,     // immediate
+					"",
+					d.ReplyTo,
+					false,
+					false,
 					amqp.Publishing{
 						ContentType:   "text/plain",
 						CorrelationId: d.CorrelationId,

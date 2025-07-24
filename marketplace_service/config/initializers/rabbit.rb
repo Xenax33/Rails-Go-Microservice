@@ -2,7 +2,7 @@ require 'bunny'
 
 
 RABBIT_CONNECTION = Bunny.new(
-  host: "localhost", # or "host.docker.internal" if needed
+  host: "localhost",
   port: 5672,
   user: "guest",
   password: "guest"
